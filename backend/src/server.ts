@@ -16,6 +16,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Toggle between real OpenAI API and mock data
+const USE_REAL_API = process.env.OPENAI_API_KEY && process.env.USE_OPENAI === 'true';
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -27,21 +30,43 @@ const openai = new OpenAI({
 app.post("/api/chat", async (req: Request, res: Response) => {
   try {
     const { prompt } = req.body;
-    const actualprompt = GET_SCHEDULE_PROMPT + USER_INPUT;
-    // const response = await openai.chat.completions.create({
-    //   model: "gpt-4",
-    //   messages: [
-    //     { role: "system", content: "You are a helpful assistant." },
-    //     {
-    //       role: "user",
-    //       content: actualprompt,
-    //     },
-    //   ],
-    //   max_tokens: 700,
-    // });
-    const response = JSON.parse(RESPONSE);
+    
+    // Use user input if provided, otherwise fall back to example
+    const userInput = prompt && prompt.trim() ? prompt : USER_INPUT;
+    const fullPrompt = GET_SCHEDULE_PROMPT + userInput;
+    
+    // console.log('User input:', userInput);
+    
+        let scheduleData;
+    console.log(USE_REAL_API,"user real api")
+    if (USE_REAL_API) {
+      console.log('Using real OpenAI API...');
+      try {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: "You are a helpful assistant that converts text into structured schedule data. Always return valid JSON only." },
+            {
+              role: "user",
+              content: fullPrompt,
+            },
+          ],
+          max_tokens: 1000,
+          temperature: 0.3
+        });
+        const content = response.choices[0].message.content || '[]';
+        scheduleData = JSON.parse(content);
+      } catch (apiError) {
+        console.error('OpenAI API error:', apiError);
+        // Fall back to mock data if API fails
+        scheduleData = JSON.parse(RESPONSE);
+      }
+    } else {
+      console.log('Using mock data...');
+      scheduleData = JSON.parse(RESPONSE);
+    }
 
-    const mutatedData = response.map((classItem: any) => ({
+    const mutatedData = scheduleData.map((classItem: any) => ({
       title: `${classItem.title}`,
       instructors: `${classItem.instructors?.join(", ")}`,
       location: `@${classItem.location}`,
