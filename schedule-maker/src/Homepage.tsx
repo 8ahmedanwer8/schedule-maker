@@ -18,16 +18,27 @@ import {
   HStack,
   Alert,
   AlertIcon,
-  Text
+  Text,
 } from "@chakra-ui/react";
-import { Calendar, momentLocalizer, DateLocalizer } from "react-big-calendar";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import moment from "moment";
 import html2canvas from "html2canvas";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import useGenerateSchedule, { CalendarEvent } from "./hooks/useGenerateSchedule";
+import useGenerateSchedule, {
+  CalendarEvent,
+} from "./hooks/useGenerateSchedule";
+import {
+  Calendar,
+  momentLocalizer,
+  DateLocalizer,
+  EventPropGetter,
+} from "react-big-calendar";
 
+const TypedCalendar = Calendar<CalendarEvent>;
 
 const localizer: DateLocalizer = momentLocalizer(moment);
+const DragAndDropCalendar = withDragAndDrop<CalendarEvent>(TypedCalendar);
 interface Event {
   title: string;
   instructors: string[];
@@ -35,26 +46,6 @@ interface Event {
   start: Date;
   end: Date;
 }
-
-const CustomToolbar = () => {
-  const startOfWeek = new Date();
-  const dayOfWeek = startOfWeek.getDay();
-  startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
-
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-  return (
-    <Box mb={4} p={3} bg="gray.50" borderRadius="md" textAlign="center">
-      <Text fontSize="lg" fontWeight="bold" color="gray.700">
-        📅 Weekly Schedule: {moment(startOfWeek).format('MMM D')} - {moment(endOfWeek).format('MMM D, YYYY')}
-      </Text>
-      <Text fontSize="sm" color="gray.600" mt={1}>
-        Current week • Events are automatically placed in this week
-      </Text>
-    </Box>
-  );
-};
 
 const formats = {
   dayFormat: (date: Date) => moment(date).format("dddd"),
@@ -76,7 +67,7 @@ const HomePage: React.FC = () => {
     setInputText("");
   };
 
-    const handleAddNew = () => {
+  const handleAddNew = () => {
     setIsAddingNew(true);
     setEditTitle("");
     setEditLocation("");
@@ -101,32 +92,35 @@ const HomePage: React.FC = () => {
     setInputText(sampleText);
   };
 
-const [minTime, maxTime] = React.useMemo(() => {
-  const min = new Date();
-  const max = new Date();
+  const [minTime, maxTime] = React.useMemo(() => {
+    const min = new Date();
+    const max = new Date();
 
-  // Default view window when there are no events
-  if (events.length === 0) {
-    min.setHours(8, 0, 0, 0);
-    max.setHours(22, 0, 0, 0);
+    // Default view window when there are no events
+    if (events.length === 0) {
+      min.setHours(8, 0, 0, 0);
+      max.setHours(22, 0, 0, 0);
+      return [min, max];
+    }
+
+    const startMins = events.map(
+      (e) => e.start.getHours() * 60 + e.start.getMinutes()
+    );
+    const endMins = events.map(
+      (e) => e.end.getHours() * 60 + e.end.getMinutes()
+    );
+
+    const minMins = Math.min(...startMins);
+    const maxMins = Math.max(...endMins);
+
+    const minHour = Math.max(0, Math.floor(minMins / 60) - 1);
+    const maxHour = Math.min(23, Math.ceil(maxMins / 60) + 1);
+
+    min.setHours(minHour, 0, 0, 0);
+    max.setHours(maxHour, 59, 0, 0);
+
     return [min, max];
-  }
-
-  const startMins = events.map(e => e.start.getHours() * 60 + e.start.getMinutes());
-  const endMins = events.map(e => e.end.getHours() * 60 + e.end.getMinutes());
-
-  const minMins = Math.min(...startMins);
-  const maxMins = Math.max(...endMins);
-
-  const minHour = Math.max(0, Math.floor(minMins / 60) - 1);
-  const maxHour = Math.min(23, Math.ceil(maxMins / 60) + 1);
-
-  min.setHours(minHour, 0, 0, 0);
-  max.setHours(maxHour, 59, 0, 0);
-
-  return [min, max];
-}, [events]);
-
+  }, [events]);
 
   const handleDownload = () => {
     const scheduleElement: any = document.getElementById("schedule");
@@ -139,13 +133,10 @@ const [minTime, maxTime] = React.useMemo(() => {
     });
   };
 
-  const eventPropGetter = (event: Event) => {
+  const eventPropGetter: EventPropGetter<CalendarEvent> = (event) => {
     const duration =
       (event.end.getTime() - event.start.getTime()) / (1000 * 60);
-    let minHeight = 30;
-    if (duration >= 60) {
-      minHeight = duration / 2;
-    }
+    const minHeight = duration >= 60 ? duration / 2 : 30;
 
     return {
       style: {
@@ -159,16 +150,34 @@ const [minTime, maxTime] = React.useMemo(() => {
     };
   };
 
+  const dayPropGetter = (date: Date) => {
+    const day = date.getDay(); // 0=Sun ... 6=Sat
+    const isWeekend = day === 0 || day === 6;
+
+    return {
+      style: isWeekend
+        ? { backgroundColor: "rgba(255, 193, 7, 0.12)" } // light highlight
+        : {},
+    };
+  };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editTitle, setEditTitle] = React.useState("");
   const [editLocation, setEditLocation] = React.useState("");
   const [editInstructors, setEditInstructors] = React.useState("");
 
+  const [editingEventId, setEditingEventId] = React.useState<string | null>(
+    null
+  );
 
+  const [newDay, setNewDay] = React.useState("Monday"); // Sunday..Saturday
+  const [newStart, setNewStart] = React.useState("10:00");
+  const [newEnd, setNewEnd] = React.useState("11:00");
 
-  const [editingEventId, setEditingEventId] = React.useState<string | null>(null);
-
-  const handleEventSelect = (event: CalendarEvent) => {
+  const handleEventSelect = (
+    event: CalendarEvent,
+    _e?: React.SyntheticEvent
+  ) => {
     setEditingEventId(event.id);
     setEditTitle(event.title);
     setEditLocation(event.location);
@@ -177,10 +186,37 @@ const [minTime, maxTime] = React.useMemo(() => {
     onOpen();
   };
 
+  const startOfThisWeekSunday = () => {
+    const d = new Date();
+    const sunday = new Date(d);
+    sunday.setDate(d.getDate() - d.getDay());
+    sunday.setHours(0, 0, 0, 0);
+    return sunday;
+  };
+
+  const dayIndex: Record<string, number> = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  };
+
+  const makeDateInWeek = (day: string, hhmm: string) => {
+    const [hh, mm] = hhmm.split(":").map(Number);
+    const base = startOfThisWeekSunday();
+    const d = new Date(base);
+    d.setDate(base.getDate() + (dayIndex[day] ?? 1));
+    d.setHours(hh, mm, 0, 0);
+    return d;
+  };
+
   const handleEventUpdate = () => {
     if (isAddingNew) {
       const id =
-        (typeof crypto !== "undefined" && "randomUUID" in crypto)
+        typeof crypto !== "undefined" && "randomUUID" in crypto
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
@@ -188,27 +224,33 @@ const [minTime, maxTime] = React.useMemo(() => {
         id,
         title: editTitle,
         location: editLocation,
-        instructors: editInstructors.split(",").map(s => s.trim()).filter(Boolean),
+        instructors: editInstructors
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
         start: new Date(),
         end: new Date(Date.now() + 60 * 60 * 1000),
       };
 
-      setEvents(prev => [...prev, newEvent]);
+      setEvents((prev) => [...prev, newEvent]);
       onClose();
       return;
     }
 
     if (!editingEventId) return;
 
-    setEvents(prev =>
-      prev.map(e =>
+    setEvents((prev) =>
+      prev.map((e) =>
         e.id === editingEventId
           ? {
-            ...e,
-            title: editTitle,
-            location: editLocation,
-            instructors: editInstructors.split(",").map(s => s.trim()).filter(Boolean),
-          }
+              ...e,
+              title: editTitle,
+              location: editLocation,
+              instructors: editInstructors
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean),
+            }
           : e
       )
     );
@@ -219,42 +261,66 @@ const [minTime, maxTime] = React.useMemo(() => {
 
   const handleEventDelete = () => {
     if (!editingEventId) return;
-    setEvents(prev => prev.filter(e => e.id !== editingEventId));
+    setEvents((prev) => prev.filter((e) => e.id !== editingEventId));
     onClose();
+  };
+
+  // Drag and Drop handlers
+  const handleEventDrop = ({ event, start, end, allDay }: any) => {
+    setEvents((prev) =>
+      prev.map((e) => (e.id === event.id ? { ...e, start, end, allDay } : e))
+    );
+  };
+
+  const handleEventResize = ({ event, start, end }: any) => {
+    setEvents((prev) =>
+      prev.map((e) => (e.id === event.id ? { ...e, start, end } : e))
+    );
   };
 
   const CustomEvent = ({ event }: any) => {
     return (
-      <div style={{
-        cursor: 'pointer',
-        padding: '2px 4px',
-        height: '100%',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          fontSize: "11px",
-          fontWeight: "bold",
-          marginBottom: '2px',
-          lineHeight: '1.1'
-        }}>
+      <div
+        style={{
+          cursor: "pointer",
+          padding: "2px 4px",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "11px",
+            fontWeight: "bold",
+            marginBottom: "2px",
+            lineHeight: "1.1",
+          }}
+        >
           {event.title}
         </div>
         {event.location && (
-          <div style={{
-            fontSize: "10px",
-            opacity: 0.8,
-            lineHeight: '1.1'
-          }}>
+          <div
+            style={{
+              fontSize: "10px",
+              opacity: 0.8,
+              lineHeight: "1.1",
+            }}
+          >
             📍 {event.location}
           </div>
         )}
         {event.instructors && event.instructors !== "undefined" && (
-          <div style={{
-            fontSize: "9px",
-            opacity: 0.7,
-            lineHeight: '1.1'
-          }}>
-            👤 {Array.isArray(event.instructors) ? event.instructors.join(', ') : event.instructors}
+          <div
+            style={{
+              fontSize: "9px",
+              opacity: 0.7,
+              lineHeight: "1.1",
+            }}
+          >
+            👤{" "}
+            {Array.isArray(event.instructors)
+              ? event.instructors.join(", ")
+              : event.instructors}
           </div>
         )}
       </div>
@@ -334,9 +400,13 @@ const [minTime, maxTime] = React.useMemo(() => {
           Add Event
         </Button>
 
-
         {events.length > 0 && (
-          <Button onClick={handleClearSchedule} colorScheme="red" variant="outline" size="lg">
+          <Button
+            onClick={handleClearSchedule}
+            colorScheme="red"
+            variant="outline"
+            size="lg"
+          >
             Clear All
           </Button>
         )}
@@ -352,32 +422,34 @@ const [minTime, maxTime] = React.useMemo(() => {
       </Box>
 
       <Box width="100%" paddingX="4%" id="schedule" mt={4}>
-        <Calendar
+        <DragAndDropCalendar
           localizer={localizer}
           date={calendarDate}
           events={events}
           onSelectEvent={handleEventSelect}
-          startAccessor="start"
-          endAccessor="end"
+          dayPropGetter={dayPropGetter}
+          startAccessor={(e) => e.start}
+          endAccessor={(e) => e.end}
+          resizable
+          onEventDrop={handleEventDrop}
+          onEventResize={handleEventResize}
+          toolbar={false}
           style={{
             width: "100%",
             height: "600px",
             borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           }}
-          defaultView={"week"}
-          view={"week"}
+          defaultView="week"
+          view="week"
           views={{ week: true }}
           eventPropGetter={eventPropGetter}
           step={30}
           timeslots={2}
-          components={{
-            event: CustomEvent,
-          }}
+          components={{ event: CustomEvent }}
           formats={formats}
           min={minTime}
           max={maxTime}
-          popup={true}
           scrollToTime={minTime}
         />
       </Box>
@@ -385,11 +457,12 @@ const [minTime, maxTime] = React.useMemo(() => {
         Made by Ahmed
       </Box>
 
-      {/* Edit Event Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{isAddingNew ? 'Add New Event' : 'Edit Event'}</ModalHeader>
+          <ModalHeader>
+            {isAddingNew ? "Add New Event" : "Edit Event"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
