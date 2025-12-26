@@ -1,75 +1,297 @@
+// export const RESPONSE = `
+// [
+//   {
+//     "title": "COMP 1000 Key Concepts in Computer Scie",
+//     "start": "Tuesday 5:30 PM",
+//     "end": "Tuesday 6:50 PM",
+//     "instructors": ["Biswas"],
+//     "location": "Chrysler Hall North G133"
+//   },
+//     {
+//     "title": "COMP 1000 Key Concepts in Computer Scie",
+//     "start": "Tuesday 5:30 PM",
+//     "end": "Tuesday 6:50 PM",
+//     "instructors": ["Biswas"],
+//     "location": "Chrysler Hall North G133"
+//   },
+//     {
+//     "title": "COMP 1000 Key Concepts in Computer Scie",
+//     "start": "Tuesday 5:30 PM",
+//     "end": "Tuesday 6:50 PM",
+//     "instructors": ["Biswas"],
+//     "location": "Chrysler Hall North G133"
+//   },
+//   {
+//     "title": "COMP 1000 Key Concepts in Computer Scie",
+//     "start": "Thursday 7:00 PM",
+//     "end": "Thursday 8:20 PM",
+//     "instructors": ["Biswas","ahmed"],
+//     "location": "Dillon Hall 359"
+//   },
+//   {
+//     "title": "COMP 1400 Intro: Algorithms & Prog I",
+//     "start": "Wednesday 7:00 PM",
+//     "end": "Wednesday 9:50 PM",
+//     "instructors": null,
+//     "location": "Odette Building 104"
+//   },
+//   {
+//     "title": "COMP 1400 Intro: Algorithms & Prog I",
+//     "start": "Monday 10:00 AM",
+//     "end": "Monday 11:20 AM",
+//     "instructors": null,
+//     "location": "West Library 305C"
+//   },
+//   {
+//     "title": "COMP 1410 Intro: Algorithms & Prog II",
+//     "start": "Thursday 8:30 PM",
+//     "end": "Thursday 9:50 PM",
+//     "instructors": null,
+//     "location": "West Library 305C"
+//   },
+//   {
+//     "title": "COMP 1410 Intro: Algorithms & Prog II",
+//     "start": "Tuesday 7:00 PM",
+//     "end": "Tuesday 9:50 PM",
+//     "instructors": null,
+//     "location": "Erie Hall 3123"
+//   },
+//   {
+//     "title": "STAT 2920 Introduction to Probability",
+//     "start": "Monday 11:30 AM",
+//     "end": "Monday 12:50 PM",
+//     "instructors": null,
+//     "location": "Erie Hall 3123"
+//   },
+//   {
+//     "title": "STAT 2920 Introduction to Probability",
+//     "start": "Friday 8:30 AM",
+//     "end": "Friday 9:20 AM",
+//     "instructors": null,
+//     "location": "Toldo Health Education Ctr 104"
+//   }
+// ]
+// `;
+
 export const RESPONSE = `
 [
-  {
-    "title": "COMP 1000 Key Concepts in Computer Scie",
-    "start": "Tuesday 5:30 PM",
-    "end": "Tuesday 6:50 PM",
-    "instructors": ["Biswas"],
-    "location": "Chrysler Hall North G133"
-  },
-    {
-    "title": "COMP 1000 Key Concepts in Computer Scie",
-    "start": "Tuesday 5:30 PM",
-    "end": "Tuesday 6:50 PM",
-    "instructors": ["Biswas"],
-    "location": "Chrysler Hall North G133"
-  },
-    {
-    "title": "COMP 1000 Key Concepts in Computer Scie",
-    "start": "Tuesday 5:30 PM",
-    "end": "Tuesday 6:50 PM",
-    "instructors": ["Biswas"],
-    "location": "Chrysler Hall North G133"
-  },
-  {
-    "title": "COMP 1000 Key Concepts in Computer Scie",
-    "start": "Thursday 7:00 PM",
-    "end": "Thursday 8:20 PM",
-    "instructors": ["Biswas","ahmed"],
-    "location": "Dillon Hall 359"
-  },
-  {
-    "title": "COMP 1400 Intro: Algorithms & Prog I",
-    "start": "Wednesday 7:00 PM",
-    "end": "Wednesday 9:50 PM",
-    "instructors": null,
-    "location": "Odette Building 104"
-  },
-  {
-    "title": "COMP 1400 Intro: Algorithms & Prog I",
-    "start": "Monday 10:00 AM",
-    "end": "Monday 11:20 AM",
-    "instructors": null,
-    "location": "West Library 305C"
-  },
-  {
-    "title": "COMP 1410 Intro: Algorithms & Prog II",
-    "start": "Thursday 8:30 PM",
-    "end": "Thursday 9:50 PM",
-    "instructors": null,
-    "location": "West Library 305C"
-  },
-  {
-    "title": "COMP 1410 Intro: Algorithms & Prog II",
-    "start": "Tuesday 7:00 PM",
-    "end": "Tuesday 9:50 PM",
-    "instructors": null,
-    "location": "Erie Hall 3123"
-  },
-  {
-    "title": "STAT 2920 Introduction to Probability",
-    "start": "Monday 11:30 AM",
-    "end": "Monday 12:50 PM",
-    "instructors": null,
-    "location": "Erie Hall 3123"
-  },
-  {
-    "title": "STAT 2920 Introduction to Probability",
-    "start": "Friday 8:30 AM",
-    "end": "Friday 9:20 AM",
-    "instructors": null,
-    "location": "Toldo Health Education Ctr 104"
-  }
+{
+"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LEC)",
+"start": "Monday 11:30 AM",
+"end": "Monday 12:50 PM",
+"instructors": null,
+"location": "Dillon Hall 255"
+},
+{
+"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LEC)",
+"start": "Wednesday 11:30 AM",
+"end": "Wednesday 12:50 PM",
+"instructors": null,
+"location": "Dillon Hall 255"
+},
+{
+"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LAB)",
+"start": "Monday 4:00 PM",
+"end": "Monday 5:20 PM",
+"instructors": null,
+"location": "Erie Hall 3120"
+},
+{
+"title": "COMP 2560 System Programming (LEC)",
+"start": "Monday 1:00 PM",
+"end": "Monday 2:20 PM",
+"instructors": null,
+"location": "Toldo Health Education Ctr 102"
+},
+{
+"title": "COMP 2560 System Programming (LEC)",
+"start": "Wednesday 1:00 PM",
+"end": "Wednesday 2:20 PM",
+"instructors": null,
+"location": "Toldo Health Education Ctr 102"
+},
+{
+"title": "COMP 2560 System Programming (LAB)",
+"start": "Wednesday 5:30 PM",
+"end": "Wednesday 6:50 PM",
+"instructors": null,
+"location": "West Library 305C"
+},
+{
+"title": "ELEC 4000A Capstone Design Project (LEC)",
+"start": "Friday 8:30 AM",
+"end": "Friday 10:20 AM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 1102"
+},
+{
+"title": "ELEC 4000A Capstone Design Project (LAB)",
+"start": "Thursday 8:30 PM",
+"end": "Thursday 9:50 PM",
+"instructors": null,
+"location": null
+},
+{
+"title": "ELEC 4000A Capstone Design Project (LAB)",
+"start": "Friday 10:30 AM",
+"end": "Friday 12:50 PM",
+"instructors": null,
+"location": null
+},
+{
+"title": "ELEC 4310 Control Systems II (LEC)",
+"start": "Tuesday 11:30 AM",
+"end": "Tuesday 12:50 PM",
+"instructors": null,
+"location": "Chrysler Hall South 51"
+},
+{
+"title": "ELEC 4310 Control Systems II (LEC)",
+"start": "Thursday 11:30 AM",
+"end": "Thursday 12:50 PM",
+"instructors": null,
+"location": "Chrysler Hall South 51"
+},
+{
+"title": "ELEC 4310 Control Systems II (LAB)",
+"start": "Tuesday 2:30 PM",
+"end": "Tuesday 5:20 PM",
+"instructors": null,
+"location": "Ctr. for Engin. Innovation 113"
+},
+{
+"title": "ELEC 4310 Control Systems II (LAB)",
+"start": "Tuesday 2:30 PM",
+"end": "Tuesday 5:20 PM",
+"instructors": null,
+"location": "Toldo Health Education Ctr 203"
+},
+{
+"title": "ELEC 4490 Sensor and Vision Systems (LEC)",
+"start": "Tuesday 1:00 PM",
+"end": "Tuesday 2:20 PM",
+"instructors": null,
+"location": "Erie Hall 2123"
+},
+{
+"title": "ELEC 4490 Sensor and Vision Systems (LEC)",
+"start": "Thursday 1:00 PM",
+"end": "Thursday 2:20 PM",
+"instructors": null,
+"location": "Erie Hall 2123"
+},
+{
+"title": "ELEC 4490 Sensor and Vision Systems (LAB)",
+"start": "Thursday 2:30 PM",
+"end": "Thursday 3:50 PM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 2100"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Tuesday 7:30 PM",
+"end": "Tuesday 8:50 PM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 1102"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Tuesday 7:30 PM",
+"end": "Tuesday 8:50 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105A"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Tuesday 7:30 PM",
+"end": "Tuesday 8:50 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105B"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Tuesday 7:30 PM",
+"end": "Tuesday 8:50 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105D"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Friday 7:30 PM",
+"end": "Friday 8:50 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105C"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Friday 7:30 PM",
+"end": "Friday 8:50 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105D"
+},
+{
+"title": "ELEC 4500 Power Systems I (LEC)",
+"start": "Friday 7:30 PM",
+"end": "Friday 8:50 PM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 1102"
+},
+{
+"title": "ELEC 4500 Power Systems I (LAB)",
+"start": "Friday 5:30 PM",
+"end": "Friday 7:20 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105D"
+},
+{
+"title": "ELEC 4500 Power Systems I (LAB)",
+"start": "Friday 5:30 PM",
+"end": "Friday 7:20 PM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 1102"
+},
+{
+"title": "ELEC 4500 Power Systems I (LAB)",
+"start": "Friday 5:30 PM",
+"end": "Friday 7:20 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105C"
+},
+{
+"title": "ELEC 4570 Fund-Digital Signal Processg (LEC)",
+"start": "Wednesday 4:00 PM",
+"end": "Wednesday 5:20 PM",
+"instructors": null,
+"location": "Erie Hall 2123"
+},
+{
+"title": "ELEC 4570 Fund-Digital Signal Processg (LEC)",
+"start": "Friday 4:00 PM",
+"end": "Friday 5:20 PM",
+"instructors": null,
+"location": "Erie Hall 2123"
+},
+{
+"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
+"start": "Thursday 6:30 PM",
+"end": "Thursday 8:20 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105C"
+},
+{
+"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
+"start": "Thursday 6:30 PM",
+"end": "Thursday 8:20 PM",
+"instructors": null,
+"location": "Ctr For Engin. Innovation 1101"
+},
+{
+"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
+"start": "Thursday 6:30 PM",
+"end": "Thursday 8:20 PM",
+"instructors": null,
+"location": "Computer Lab - CE2105B"
+}
 ]
 `;
 export const GET_SCHEDULE_PROMPT_SHORT = `

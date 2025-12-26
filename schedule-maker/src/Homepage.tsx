@@ -25,6 +25,7 @@ import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import moment from "moment";
 import html2canvas from "html2canvas";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import type { View } from "react-big-calendar";
 import useGenerateSchedule, {
   CalendarEvent,
 } from "./hooks/useGenerateSchedule";
@@ -52,6 +53,7 @@ const formats = {
 };
 
 const HomePage: React.FC = () => {
+  const scheduleRef = React.useRef<HTMLDivElement>(null);
   const [inputText, setInputText] = React.useState<string>("");
   const [isAddingNew, setIsAddingNew] = React.useState(false);
   const [events, setEvents] = React.useState<CalendarEvent[]>([]);
@@ -92,11 +94,38 @@ const HomePage: React.FC = () => {
     setInputText(sampleText);
   };
 
+  const hasWeekendEvents = React.useMemo(() => {
+    return events.some((e) => {
+      const d = e.start.getDay();
+      return d === 0 || d === 6;
+    });
+  }, [events]);
+  const calendarView: View = hasWeekendEvents ? "week" : "work_week";
+  const visibleDays = React.useMemo(() => {
+    // Mon-Fri only if no weekend classes, else Sun-Sat
+    return hasWeekendEvents ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5];
+  }, [hasWeekendEvents]);
+
+  const WeekHeader = ({ date }: { date: Date }) => {
+    return (
+      <div style={{ fontWeight: 700 }}>
+        {moment(date).format("ddd")} {/* Mon Tue Wed... */}
+      </div>
+    );
+  };
+
+  const STEP_MINUTES = 30;
+
+  const floorToStep = (mins: number) =>
+    Math.floor(mins / STEP_MINUTES) * STEP_MINUTES;
+
+  const ceilToStep = (mins: number) =>
+    Math.ceil(mins / STEP_MINUTES) * STEP_MINUTES;
+
   const [minTime, maxTime] = React.useMemo(() => {
     const min = new Date();
     const max = new Date();
 
-    // Default view window when there are no events
     if (events.length === 0) {
       min.setHours(8, 0, 0, 0);
       max.setHours(22, 0, 0, 0);
@@ -110,54 +139,120 @@ const HomePage: React.FC = () => {
       (e) => e.end.getHours() * 60 + e.end.getMinutes()
     );
 
-    const minMins = Math.min(...startMins);
-    const maxMins = Math.max(...endMins);
+    const minM = floorToStep(Math.min(...startMins));
+    const maxM = ceilToStep(Math.max(...endMins));
 
-    const minHour = Math.max(0, Math.floor(minMins / 60) - 1);
-    const maxHour = Math.min(23, Math.ceil(maxMins / 60) + 1);
-
-    min.setHours(minHour, 0, 0, 0);
-    max.setHours(maxHour, 59, 0, 0);
+    min.setHours(Math.floor(minM / 60), minM % 60, 0, 0);
+    max.setHours(Math.floor(maxM / 60), maxM % 60, 0, 0);
 
     return [min, max];
   }, [events]);
 
-  const handleDownload = () => {
-    const scheduleElement: any = document.getElementById("schedule");
-    html2canvas(scheduleElement).then((canvas) => {
-      const img = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = "schedule.png";
-      link.href = img;
-      link.click();
+  const nextPaint = () =>
+    new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => resolve());
+      });
     });
+
+  const handleDownload = async () => {
+    const node = scheduleRef.current;
+    if (!node) return;
+
+    // wait for layout (important right after adding/resizing events)
+    await nextPaint();
+
+    const headerEl = node.querySelector(
+      ".rbc-time-header"
+    ) as HTMLElement | null;
+    const scrollerEl = node.querySelector(
+      ".rbc-time-content"
+    ) as HTMLElement | null;
+
+    // export full scrollable height (not just what's visible)
+    const headerH = headerEl?.getBoundingClientRect().height ?? 0;
+    const bodyH = scrollerEl?.scrollHeight ?? node.scrollHeight;
+
+    // small padding so nothing clips
+    const exportHeight = Math.ceil(headerH + bodyH + 12);
+    const exportWidth = Math.ceil(node.scrollWidth);
+
+    const canvas = await html2canvas(node, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true,
+
+      // IMPORTANT: capture full content size
+      width: exportWidth,
+      height: exportHeight,
+      windowWidth: exportWidth,
+      windowHeight: exportHeight,
+
+      scrollX: 0,
+      scrollY: 0,
+
+      onclone: (doc) => {
+        const root = doc.getElementById(
+          "schedule-export-root"
+        ) as HTMLElement | null;
+        if (!root) return;
+
+        // Make sure export doesn't clip scrollable content
+        const style = doc.createElement("style");
+        style.innerHTML = `
+        /* --- export-only fixes --- */
+        #schedule-export-root { overflow: visible !important; max-height: none !important; height: auto !important; }
+
+        /* the internal scroller that normally clips */
+        #schedule-export-root .rbc-time-content { overflow: visible !important; max-height: none !important; height: auto !important; }
+
+        /* keep header from clipping */
+        #schedule-export-root .rbc-time-header,
+        #schedule-export-root .rbc-time-header-content,
+        #schedule-export-root .rbc-time-header-content .rbc-row {
+          overflow: visible !important;
+        }
+
+        #schedule-export-root .rbc-time-header-content .rbc-header {
+          padding-top: 6px !important;
+          padding-bottom: 6px !important;
+          line-height: 1.2 !important;
+        }
+      `;
+        doc.head.appendChild(style);
+      },
+    });
+
+    const img = canvas.toDataURL("image/png", 1.0);
+    const link = document.createElement("a");
+    link.download = `schedule-${moment().format("YYYY-MM-DD")}.png`;
+    link.href = img;
+    link.click();
   };
 
   const eventPropGetter: EventPropGetter<CalendarEvent> = (event) => {
     const duration =
       (event.end.getTime() - event.start.getTime()) / (1000 * 60);
-    const minHeight = duration >= 60 ? duration / 2 : 30;
 
     return {
       style: {
-        minHeight: `${minHeight}px`,
         overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        padding: "4px",
-        fontSize: duration < 60 ? "10px" : "12px",
+        padding: "2px 4px",
+        fontSize: duration < 60 ? "10px" : "11px",
+        lineHeight: 1.15,
+        borderRadius: "6px",
       },
     };
   };
 
   const dayPropGetter = (date: Date) => {
-    const day = date.getDay(); // 0=Sun ... 6=Sat
-    const isWeekend = day === 0 || day === 6;
+    if (!hasWeekendEvents) return {}; // work_week view: no weekends shown anyway
+
+    const d = date.getDay(); // 0=Sun, 6=Sat
+    const isWeekend = d === 0 || d === 6;
 
     return {
-      style: isWeekend
-        ? { backgroundColor: "rgba(255, 193, 7, 0.12)" } // light highlight
-        : {},
+      style: isWeekend ? { backgroundColor: "rgba(255, 193, 7, 0.12)" } : {},
     };
   };
 
@@ -212,6 +307,8 @@ const HomePage: React.FC = () => {
     d.setHours(hh, mm, 0, 0);
     return d;
   };
+  const start = makeDateInWeek(newDay, newStart);
+  const end = makeDateInWeek(newDay, newEnd);
 
   const handleEventUpdate = () => {
     if (isAddingNew) {
@@ -228,8 +325,8 @@ const HomePage: React.FC = () => {
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
-        start: new Date(),
-        end: new Date(Date.now() + 60 * 60 * 1000),
+        start: start,
+        end: end,
       };
 
       setEvents((prev) => [...prev, newEvent]);
@@ -278,54 +375,70 @@ const HomePage: React.FC = () => {
     );
   };
 
-  const CustomEvent = ({ event }: any) => {
+  const CustomEvent = ({ event }: { event: CalendarEvent }) => {
+    const durationMin =
+      (event.end.getTime() - event.start.getTime()) / (1000 * 60);
+
+    const showLocation = durationMin >= 75;
+    const showInstructors = durationMin >= 90;
+
+    const timeText = `${moment(event.start).format("h:mm A")} – ${moment(
+      event.end
+    ).format("h:mm A")}`;
+
+    const clamp = (lines: number) => ({
+      display: "-webkit-box",
+      WebkitBoxOrient: "vertical" as const,
+      WebkitLineClamp: lines,
+      overflow: "hidden",
+    });
+
     return (
-      <div
-        style={{
-          cursor: "pointer",
-          padding: "2px 4px",
-          height: "100%",
-          overflow: "hidden",
-        }}
-      >
+      <div style={{ cursor: "pointer" }}>
+        <div style={{ fontSize: "10px", opacity: 0.95, ...clamp(1) }}>
+          {timeText}
+        </div>
+
         <div
           style={{
-            fontSize: "11px",
-            fontWeight: "bold",
-            marginBottom: "2px",
-            lineHeight: "1.1",
+            fontSize: durationMin < 60 ? "10px" : "11px",
+            fontWeight: 700,
+            marginTop: "2px",
+            ...clamp(durationMin < 60 ? 1 : 2),
           }}
         >
           {event.title}
         </div>
-        {event.location && (
+
+        {showLocation && event.location && (
           <div
             style={{
               fontSize: "10px",
-              opacity: 0.8,
-              lineHeight: "1.1",
+              opacity: 0.85,
+              marginTop: "2px",
+              ...clamp(1),
             }}
           >
             📍 {event.location}
           </div>
         )}
-        {event.instructors && event.instructors !== "undefined" && (
+
+        {showInstructors && event.instructors?.length > 0 && (
           <div
             style={{
               fontSize: "9px",
-              opacity: 0.7,
-              lineHeight: "1.1",
+              opacity: 0.75,
+              marginTop: "2px",
+              ...clamp(1),
             }}
           >
-            👤{" "}
-            {Array.isArray(event.instructors)
-              ? event.instructors.join(", ")
-              : event.instructors}
+            👤 {event.instructors.join(", ")}
           </div>
         )}
       </div>
     );
   };
+
   return (
     <Box
       height="100vh"
@@ -421,7 +534,13 @@ const HomePage: React.FC = () => {
         </Text>
       </Box>
 
-      <Box width="100%" paddingX="4%" id="schedule" mt={4}>
+      <Box
+        width="100%"
+        paddingX="4%"
+        mt={4}
+        ref={scheduleRef}
+        id="schedule-export-root"
+      >
         <DragAndDropCalendar
           localizer={localizer}
           date={calendarDate}
@@ -440,17 +559,22 @@ const HomePage: React.FC = () => {
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           }}
-          defaultView="week"
-          view="week"
-          views={{ week: true }}
+          defaultView={calendarView}
+          view={calendarView}
+          views={{ week: true, work_week: true }}
           eventPropGetter={eventPropGetter}
           step={30}
           timeslots={2}
-          components={{ event: CustomEvent }}
+          components={{
+            event: CustomEvent,
+            week: { header: WeekHeader as any },
+            work_week: { header: WeekHeader as any },
+          }}
           formats={formats}
           min={minTime}
           max={maxTime}
           scrollToTime={minTime}
+          dayLayoutAlgorithm="no-overlap"
         />
       </Box>
       <Box py="20px" fontSize="14px">
@@ -461,7 +585,49 @@ const HomePage: React.FC = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {isAddingNew ? "Add New Event" : "Edit Event"}
+            {isAddingNew && (
+              <>
+                <FormControl>
+                  <FormLabel>Day</FormLabel>
+                  <select
+                    value={newDay}
+                    onChange={(e) => setNewDay(e.target.value)}
+                  >
+                    {[
+                      "Sunday",
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                    ].map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Start</FormLabel>
+                  <Input
+                    type="time"
+                    value={newStart}
+                    onChange={(e) => setNewStart(e.target.value)}
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>End</FormLabel>
+                  <Input
+                    type="time"
+                    value={newEnd}
+                    onChange={(e) => setNewEnd(e.target.value)}
+                  />
+                </FormControl>
+              </>
+            )}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
