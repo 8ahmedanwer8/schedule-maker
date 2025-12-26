@@ -35,6 +35,8 @@ import {
   DateLocalizer,
   EventPropGetter,
 } from "react-big-calendar";
+import { fetchUsageStatus, reportAdCompleted, UsageStatus } from "./usageApi";
+import { ensureSessionId } from "./session";
 
 const TypedCalendar = Calendar<CalendarEvent>;
 
@@ -58,10 +60,38 @@ const HomePage: React.FC = () => {
   const [isAddingNew, setIsAddingNew] = React.useState(false);
   const [events, setEvents] = React.useState<CalendarEvent[]>([]);
   const { generateSchedule, loading, error } = useGenerateSchedule();
+  const [usage, setUsage] = React.useState<UsageStatus | null>(null);
+  const [needsAdOpen, setNeedsAdOpen] = React.useState(false);
+  const [pendingPrompt, setPendingPrompt] = React.useState<string>("");
+
+  React.useEffect(() => {
+    (async () => {
+      await ensureSessionId();
+      const status = await fetchUsageStatus();
+      setUsage(status);
+    })().catch(() => {});
+  }, []);
 
   const handleGenerate = async () => {
-    const newEvents = await generateSchedule(inputText);
-    setEvents(newEvents);
+    const result = await generateSchedule(inputText);
+
+    if (result.ok) {
+      setEvents(result.events);
+
+      // refresh usage display (or set from result.usage if you want)
+      fetchUsageStatus()
+        .then(setUsage)
+        .catch(() => {});
+      return;
+    }
+
+    if (result.needsAd) {
+      setPendingPrompt(inputText);
+      setNeedsAdOpen(true);
+      return;
+    }
+
+    // normal error already set in hook
   };
 
   const handleClearSchedule = () => {
@@ -438,6 +468,20 @@ const HomePage: React.FC = () => {
       </div>
     );
   };
+  // Interface for usage limit result
+  interface UsageLimitResult {
+    canProceed: boolean;
+    reason:
+      | "within_free_limit"
+      | "using_ad_credit"
+      | "need_to_watch_ad"
+      | "max_daily_exceeded"
+      | "user_not_found"
+      | "system_error";
+    remainingFree: number;
+    adCredits: number;
+    message?: string;
+  }
 
   return (
     <Box
@@ -504,6 +548,13 @@ const HomePage: React.FC = () => {
         >
           {events.length ? "Regenerate Schedule" : "Generate Schedule"}
         </Button>
+        {usage && (
+          <Box mt={2} fontSize="sm" color="gray.600">
+            Free left today: <b>{usage.remainingFree}</b> • Ad credits:{" "}
+            <b>{usage.adCredits}</b> • Daily used: <b>{usage.dailyCount}</b>/
+            {usage.limits.maxDailyUsage}
+          </Box>
+        )}
         <Button
           onClick={handleAddNew}
           colorScheme="green"
@@ -527,10 +578,16 @@ const HomePage: React.FC = () => {
 
       <Box textAlign="center" mt={3}>
         <Text fontSize="sm" color="green.600" fontWeight="medium">
-          ✓ {events.length} events generated successfully!
-        </Text>
-        <Text fontSize="xs" color="gray.500" mt={1}>
-          Click any event to edit • All events show in current week view
+          {events.length > 0 && (
+            <Box textAlign="center" mt={3}>
+              <Text fontSize="sm" color="green.600" fontWeight="medium">
+                ✓ {events.length} events generated successfully!
+              </Text>
+              <Text fontSize="xs" color="gray.500" mt={1}>
+                Click any event to edit • All events show in current week view
+              </Text>
+            </Box>
+          )}
         </Text>
       </Box>
 
@@ -666,6 +723,62 @@ const HomePage: React.FC = () => {
               </Button>
               <Button colorScheme="blue" onClick={handleEventUpdate}>
                 Update
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal
+        isOpen={needsAdOpen}
+        onClose={() => setNeedsAdOpen(false)}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Free limit reached</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text mb={3}>
+              You’ve used your free generations for today. Watch an ad to get
+              another generation.
+            </Text>
+
+            {usage && (
+              <Box fontSize="sm" color="gray.600">
+                <div>Free left today: {usage.remainingFree}</div>
+                <div>Ad credits: {usage.adCredits}</div>
+                <div>
+                  Daily used: {usage.dailyCount} / {usage.limits.maxDailyUsage}
+                </div>
+              </Box>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Button variant="ghost" onClick={() => setNeedsAdOpen(false)}>
+                Not now
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  // MVP: pretend the user watched an ad
+                  await reportAdCompleted();
+                  const status = await fetchUsageStatus();
+                  setUsage(status);
+
+                  setNeedsAdOpen(false);
+
+                  // retry generation
+                  const retry = await generateSchedule(pendingPrompt);
+                  if (retry.ok) {
+                    setEvents(retry.events);
+                    fetchUsageStatus()
+                      .then(setUsage)
+                      .catch(() => {});
+                  }
+                }}
+              >
+                I watched the ad ✅
               </Button>
             </HStack>
           </ModalFooter>

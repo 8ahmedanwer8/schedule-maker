@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 
+#database
+/data
+*.db
+*.db-journal
+
 # testing
 /coverage
 
