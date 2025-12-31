@@ -12,6 +12,7 @@ import {
 } from "./prompt";
 import { usageLimitMiddleware } from "./middleware/usageLimit";
 import usageRoutes from "./routes/usage";
+import commentRoutes from "./routes/comments";
 import { database } from "./database";
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use(bodyParser.json());
 
 // Add usage routes
 app.use("/api/usage", usageRoutes);
+app.use("/api/comments", commentRoutes);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

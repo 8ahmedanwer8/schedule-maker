@@ -37,6 +37,7 @@ import {
 } from "react-big-calendar";
 import { fetchUsageStatus, reportAdCompleted, UsageStatus } from "./usageApi";
 import { ensureSessionId } from "./session";
+import CommentSection from "./components/CommentSection";
 
 const TypedCalendar = Calendar<CalendarEvent>;
 
@@ -493,15 +494,6 @@ const HomePage: React.FC = () => {
       paddingTop="50px"
     >
       <HStack spacing={3} mb={4}>
-        <Button
-          onClick={handleDownload}
-          colorScheme="purple"
-          variant="outline"
-          size="sm"
-          isDisabled={events.length === 0}
-        >
-          📸 Download as Image
-        </Button>
         <Text fontSize="xl" fontWeight="bold" color="gray.700">
           🤖 AI Schedule Maker
         </Text>
@@ -584,7 +576,7 @@ const HomePage: React.FC = () => {
                 ✓ {events.length} events generated successfully!
               </Text>
               <Text fontSize="xs" color="gray.500" mt={1}>
-                Click any event to edit • All events show in current week view
+                Click any event to edit
               </Text>
             </Box>
           )}
@@ -598,6 +590,15 @@ const HomePage: React.FC = () => {
         ref={scheduleRef}
         id="schedule-export-root"
       >
+        <Button
+          onClick={handleDownload}
+          colorScheme="purple"
+          variant="outline"
+          size="sm"
+          isDisabled={events.length === 0}
+        >
+          📸 Download as Image
+        </Button>
         <DragAndDropCalendar
           localizer={localizer}
           date={calendarDate}
@@ -634,6 +635,9 @@ const HomePage: React.FC = () => {
           dayLayoutAlgorithm="no-overlap"
         />
       </Box>
+
+      <CommentSection />
+
       <Box py="20px" fontSize="14px">
         Made by Ahmed
       </Box>
@@ -739,7 +743,7 @@ const HomePage: React.FC = () => {
           <ModalCloseButton />
           <ModalBody>
             <Text mb={3}>
-              You’ve used your free generations for today. Watch an ad to get
+              You've used your free generations for today. Watch an ad to get
               another generation.
             </Text>
 

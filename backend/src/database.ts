@@ -249,6 +249,22 @@ class Database {
         )
       `);
 
+      // Create comments table for user feedback
+      await this.runAsync(`
+      CREATE TABLE IF NOT EXISTS comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        identifier TEXT NOT NULL,
+        comment TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+      // Create index for faster queries
+      await this.runAsync(`
+      CREATE INDEX IF NOT EXISTS idx_comments_created_at 
+      ON comments(created_at DESC)
+    `);
+
       // Initialize default settings
       await this.initializeDefaultSettings();
 
@@ -416,7 +432,27 @@ class Database {
       return "";
     }
   }
-
+  // Get recent comments (paginated)
+  async getComments(limit: number = 20, offset: number = 0): Promise<any[]> {
+    try {
+      const comments = await this.allAsync(
+        `
+      SELECT 
+        comment,
+        created_at,
+        SUBSTR(identifier, 1, 8) as user_id
+      FROM comments 
+      ORDER BY created_at DESC 
+      LIMIT ? OFFSET ?
+      `,
+        [limit, offset]
+      );
+      return comments || [];
+    } catch (error) {
+      console.error("Error getting comments:", error);
+      return [];
+    }
+  }
   // Update app setting
   async updateSetting(key: string, value: string): Promise<boolean> {
     try {
@@ -431,6 +467,65 @@ class Database {
     } catch (error) {
       console.error("Error updating setting:", error);
       return false;
+    }
+  }
+
+  // Add a new comment
+  async addComment(identifier: string, comment: string): Promise<boolean> {
+    try {
+      // Sanitize and validate comment
+      const cleanComment = comment.trim().slice(0, 300);
+
+      if (!cleanComment) {
+        return false;
+      }
+
+      // Check rate limiting (max 3 comments per day per user)
+      const today = new Date().toISOString().slice(0, 10);
+      const recentCount = await this.getAsync(
+        `
+      SELECT COUNT(*) as count 
+      FROM comments 
+      WHERE identifier = ? 
+      AND DATE(created_at) = ?
+      `,
+        [identifier, today]
+      );
+
+      if (recentCount && recentCount.count >= 3) {
+        console.log("User has reached daily comment limit");
+        return false;
+      }
+
+      await this.runAsync(
+        `
+      INSERT INTO comments (identifier, comment) 
+      VALUES (?, ?)
+      `,
+        [identifier, cleanComment]
+      );
+
+      return true;
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      return false;
+    }
+  }
+
+  // Get comment stats
+  async getCommentStats(): Promise<any> {
+    try {
+      const stats = await this.getAsync(`
+      SELECT 
+        COUNT(*) as total_comments,
+        COUNT(DISTINCT identifier) as unique_users,
+        COUNT(CASE WHEN DATE(created_at) = DATE('now') THEN 1 END) as today_comments
+      FROM comments
+    `);
+      return stats;
+    } catch (error) {
+      console.error("Error getting comment stats:", error);
+      return null;
     }
   }
 
