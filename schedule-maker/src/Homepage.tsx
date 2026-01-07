@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalCloseButton,
   FormControl,
+  Stack,
   FormLabel,
   useDisclosure,
   HStack,
@@ -183,8 +184,6 @@ const HomePage: React.FC = () => {
         requestAnimationFrame(() => resolve());
       });
     });
-
-  // inside HomePage component (Homepage.tsx)
 
   const handleDownload = async () => {
     if (!scheduleRef.current) return;
@@ -515,7 +514,12 @@ const HomePage: React.FC = () => {
       justifyContent="flex-start"
       paddingTop="50px"
     >
-      <HStack spacing={3} mb={4}>
+      <Stack
+        direction={{ base: "column", md: "row" }}
+        spacing={3}
+        mb={4}
+        align="center"
+      >
         <Button
           onClick={handleDownload}
           colorScheme="purple"
@@ -524,27 +528,35 @@ const HomePage: React.FC = () => {
           isDisabled={events.length === 0}
           isLoading={isDownloading}
           loadingText="Generating..."
+          width={{ base: "100%", md: "auto" }}
         >
           📸 Download as Image
         </Button>
-        <Text fontSize="xl" fontWeight="bold" color="gray.700">
+
+        <Text
+          fontSize={{ base: "lg", md: "xl" }}
+          fontWeight="bold"
+          color="gray.700"
+        >
           🤖 AI Schedule Maker
         </Text>
-      </HStack>
-      <Box width={["90%", "80%", "70%", "60%"]} paddingX={4}>
+      </Stack>
+
+      <Box width={{ base: "95%", md: "80%", lg: "70%", xl: "60%" }} px={4}>
         <VStack width="100%" spacing={2}>
           <Textarea
+            size={{ base: "md", md: "lg" }}
+            fontSize={{ base: "sm", md: "md" }}
             placeholder="Enter your schedule text here (e.g., class schedules, course info, etc.)&#10;&#10;Try: 'Math class Monday 2PM-3PM in Room 101 with Dr. Smith'&#10;Or paste course registration data!"
-            size="lg"
             width="100%"
             bg="white"
             boxShadow="sm"
             borderRadius="md"
-            maxHeight="200px"
-            overflowY="auto"
+            maxHeight={{ base: "160px", md: "200px" }}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
           />
+
           <HStack width="100%" justifyContent="flex-end">
             <Button size="sm" variant="ghost" onClick={handleLoadSample}>
               Load Sample 📝
@@ -562,29 +574,32 @@ const HomePage: React.FC = () => {
         </Alert>
       )}
 
-      <HStack spacing={4}>
+      <Stack
+        direction={{ base: "column", md: "row" }}
+        spacing={3}
+        mt={2}
+        width="100%"
+        align={{ base: "stretch", md: "center" }}
+        justify="center"
+      >
         <Button
           onClick={handleGenerate}
           isLoading={loading}
           loadingText="Generating..."
           colorScheme="blue"
-          size="lg"
+          size={{ base: "md", md: "lg" }}
           isDisabled={!inputText.trim()}
+          width={{ base: "100%", md: "auto" }}
         >
           {events.length ? "Regenerate Schedule" : "Generate Schedule"}
         </Button>
-        {usage && (
-          <Box mt={2} fontSize="sm" color="gray.600">
-            Free left today: <b>{usage.remainingFree}</b> • Ad credits:{" "}
-            <b>{usage.adCredits}</b> • Daily used: <b>{usage.dailyCount}</b>/
-            {usage.limits.maxDailyUsage}
-          </Box>
-        )}
+
         <Button
           onClick={handleAddNew}
           colorScheme="green"
-          size="lg"
+          size={{ base: "md", md: "lg" }}
           isDisabled={events.length === 0}
+          width={{ base: "100%", md: "auto" }}
         >
           Add Event
         </Button>
@@ -594,12 +609,14 @@ const HomePage: React.FC = () => {
             onClick={handleClearSchedule}
             colorScheme="red"
             variant="outline"
-            size="lg"
+            size={{ base: "md", md: "lg" }}
+            width={{ base: "100%", md: "auto" }}
           >
             Clear All
           </Button>
         )}
-      </HStack>
+      </Stack>
+
       <Box>
         <Text fontSize="sm" color="green.600" fontWeight="medium">
           {events.length > 0 && (
@@ -621,41 +638,49 @@ const HomePage: React.FC = () => {
         ref={scheduleRef}
         id="schedule-export-root"
       >
-        <DragAndDropCalendar
-          localizer={localizer}
-          date={calendarDate}
-          events={events}
-          onSelectEvent={handleEventSelect}
-          dayPropGetter={dayPropGetter}
-          startAccessor={(e) => e.start}
-          endAccessor={(e) => e.end}
-          resizable
-          onEventDrop={handleEventDrop}
-          onEventResize={handleEventResize}
-          toolbar={false}
-          style={{
-            width: "100%",
-            height: "600px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-          defaultView={calendarView}
-          view={calendarView}
-          views={{ week: true, work_week: true }}
-          eventPropGetter={eventPropGetter}
-          step={60}
-          timeslots={1}
-          components={{
-            event: CustomEvent,
-            week: { header: WeekHeader as any },
-            work_week: { header: WeekHeader as any },
-          }}
-          formats={formats}
-          min={minTime}
-          max={maxTime}
-          scrollToTime={minTime}
-          dayLayoutAlgorithm="no-overlap"
-        />
+        <Box
+          width="100%"
+          overflowX="auto"
+          borderRadius="8px"
+          sx={{ WebkitOverflowScrolling: "touch" }}
+        ></Box>
+        <Box minW="1100px">
+          <DragAndDropCalendar
+            localizer={localizer}
+            date={calendarDate}
+            events={events}
+            onSelectEvent={handleEventSelect}
+            dayPropGetter={dayPropGetter}
+            startAccessor={(e) => e.start}
+            endAccessor={(e) => e.end}
+            resizable
+            onEventDrop={handleEventDrop}
+            onEventResize={handleEventResize}
+            toolbar={false}
+            style={{
+              width: "100%",
+              height: "600px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            defaultView={calendarView}
+            view={calendarView}
+            views={{ week: true, work_week: true }}
+            eventPropGetter={eventPropGetter}
+            step={60}
+            timeslots={1}
+            components={{
+              event: CustomEvent,
+              week: { header: WeekHeader as any },
+              work_week: { header: WeekHeader as any },
+            }}
+            formats={formats}
+            min={minTime}
+            max={maxTime}
+            scrollToTime={minTime}
+            dayLayoutAlgorithm="no-overlap"
+          />
+        </Box>
       </Box>
       <CommentSection />
       <Box py="20px" fontSize="14px">
@@ -768,12 +793,10 @@ const HomePage: React.FC = () => {
             </Text>
 
             {usage && (
-              <Box fontSize="sm" color="gray.600">
-                <div>Free left today: {usage.remainingFree}</div>
-                <div>Ad credits: {usage.adCredits}</div>
-                <div>
-                  Daily used: {usage.dailyCount} / {usage.limits.maxDailyUsage}
-                </div>
+              <Box mt={2} fontSize="sm" color="gray.600" textAlign="center">
+                Free left today: <b>{usage.remainingFree}</b> • Ad credits:{" "}
+                <b>{usage.adCredits}</b> • Daily used: <b>{usage.dailyCount}</b>
+                /{usage.limits.maxDailyUsage}
               </Box>
             )}
           </ModalBody>
