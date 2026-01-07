@@ -17,15 +17,17 @@ import {
   useDisclosure,
   HStack,
   Alert,
+  chakra,
   AlertIcon,
   Text,
 } from "@chakra-ui/react";
+import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import moment from "moment";
 import html2canvas from "html2canvas";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import type { View } from "react-big-calendar";
+import { Text as CText } from "@chakra-ui/react";
 import useGenerateSchedule, {
   CalendarEvent,
 } from "./hooks/useGenerateSchedule";
@@ -35,6 +37,7 @@ import {
   DateLocalizer,
   EventPropGetter,
 } from "react-big-calendar";
+
 import { fetchUsageStatus, reportAdCompleted, UsageStatus } from "./usageApi";
 import { ensureSessionId } from "./session";
 import CommentSection from "./components/CommentSection";
@@ -64,6 +67,7 @@ const HomePage: React.FC = () => {
   const [usage, setUsage] = React.useState<UsageStatus | null>(null);
   const [needsAdOpen, setNeedsAdOpen] = React.useState(false);
   const [pendingPrompt, setPendingPrompt] = React.useState<string>("");
+  const [isDownloading, setIsDownloading] = React.useState(false);
 
   React.useEffect(() => {
     (async () => {
@@ -72,7 +76,6 @@ const HomePage: React.FC = () => {
       setUsage(status);
     })().catch(() => {});
   }, []);
-
   const handleGenerate = async () => {
     const result = await generateSchedule(inputText);
 
@@ -109,19 +112,19 @@ const HomePage: React.FC = () => {
   };
   const handleLoadSample = () => {
     const sampleText = `Computer Science 101
-    Monday Wednesday Friday 10:00 AM - 11:30 AM
-    Room: Science Building 204
-    Instructor: Dr. Smith
+      Monday Wednesday Friday 10:00 AM - 11:30 AM
+      Room: Science Building 204
+      Instructor: Dr. Smith
 
-    Math 150 - Calculus I
-    Tuesday Thursday 2:00 PM - 3:30 PM
-    Location: Math Hall 101
-    Prof. Johnson
+      Math 150 - Calculus I
+      Tuesday Thursday 2:00 PM - 3:30 PM
+      Location: Math Hall 101
+      Prof. Johnson
 
-    Physics Lab
-    Wednesday 3:00 PM - 6:00 PM
-    Lab Room B15
-    Dr. Wilson, TA: Sarah`;
+      Physics Lab
+      Wednesday 3:00 PM - 6:00 PM
+      Lab Room B15
+      Dr. Wilson, TA: Sarah`;
     setInputText(sampleText);
   };
 
@@ -186,79 +189,133 @@ const HomePage: React.FC = () => {
       });
     });
 
+  // inside HomePage component (Homepage.tsx)
+
   const handleDownload = async () => {
-    const node = scheduleRef.current;
-    if (!node) return;
+    if (!scheduleRef.current) return;
 
-    // wait for layout (important right after adding/resizing events)
-    await nextPaint();
+    setIsDownloading(true);
 
-    const headerEl = node.querySelector(
-      ".rbc-time-header"
-    ) as HTMLElement | null;
-    const scrollerEl = node.querySelector(
-      ".rbc-time-content"
-    ) as HTMLElement | null;
+    // helper
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-    // export full scrollable height (not just what's visible)
-    const headerH = headerEl?.getBoundingClientRect().height ?? 0;
-    const bodyH = scrollerEl?.scrollHeight ?? node.scrollHeight;
+    try {
+      // Wait for layout + fonts so html2canvas captures correctly
+      // (fonts.ready exists in most modern browsers)
+      // @ts-ignore
+      if (document.fonts?.ready) {
+        // @ts-ignore
+        await document.fonts.ready;
+      }
+      await nextPaint();
 
-    // small padding so nothing clips
-    const exportHeight = Math.ceil(headerH + bodyH + 12);
-    const exportWidth = Math.ceil(node.scrollWidth);
+      // Capture ONLY the calendar area
+      const exportRoot = scheduleRef.current; // this is #schedule-export-root
+      const calendarEl = exportRoot.querySelector(
+        ".rbc-calendar"
+      ) as HTMLElement;
+      if (!calendarEl) return;
 
-    const canvas = await html2canvas(node, {
-      backgroundColor: "#ffffff",
-      scale: 2,
-      useCORS: true,
+      // Create an offscreen container
+      const offscreen = document.createElement("div");
+      offscreen.style.position = "fixed";
+      offscreen.style.left = "-10000px";
+      offscreen.style.top = "0";
+      offscreen.style.background = "white";
+      offscreen.style.padding = "16px";
 
-      // IMPORTANT: capture full content size
-      width: exportWidth,
-      height: exportHeight,
-      windowWidth: exportWidth,
-      windowHeight: exportHeight,
+      // Match on-screen width so it looks the same
+      const rect = calendarEl.getBoundingClientRect();
+      offscreen.style.width = `${Math.ceil(rect.width)}px`;
 
-      scrollX: 0,
-      scrollY: 0,
+      // Clone the calendar DOM
+      const clone = calendarEl.cloneNode(true) as HTMLElement;
+      clone.style.background = "#fff";
+      // Add export-only CSS that removes scroll-cropping + unclamps text
+      const style = document.createElement("style");
+      style.innerHTML = `
 
-      onclone: (doc) => {
-        const root = doc.getElementById(
-          "schedule-export-root"
-        ) as HTMLElement | null;
-        if (!root) return;
-
-        // Make sure export doesn't clip scrollable content
-        const style = doc.createElement("style");
-        style.innerHTML = `
-        /* --- export-only fixes --- */
-        #schedule-export-root { overflow: visible !important; max-height: none !important; height: auto !important; }
-
-        /* the internal scroller that normally clips */
-        #schedule-export-root .rbc-time-content { overflow: visible !important; max-height: none !important; height: auto !important; }
-
-        /* keep header from clipping */
-        #schedule-export-root .rbc-time-header,
-        #schedule-export-root .rbc-time-header-content,
-        #schedule-export-root .rbc-time-header-content .rbc-row {
-          overflow: visible !important;
+          /* Force pure white backgrounds (prevents grey wash) */
+        .rbc-calendar,
+        .rbc-time-view,
+        .rbc-time-content,
+        .rbc-day-slot,
+        .rbc-time-header,
+        .rbc-time-header-content,
+        .rbc-time-header-gutter,
+        .rbc-timeslot-group {
+          background: #fff !important;
         }
 
-        #schedule-export-root .rbc-time-header-content .rbc-header {
-          padding-top: 6px !important;
-          padding-bottom: 6px !important;
-          line-height: 1.2 !important;
+        /* Make grid lines lighter (optional, helps the “grey” look) */
+        .rbc-time-slot,
+        .rbc-timeslot-group,
+        .rbc-day-slot .rbc-time-slot {
+          border-color: rgba(0,0,0,0.08) !important;
         }
-      `;
-        doc.head.appendChild(style);
-      },
-    });
 
-    const img = canvas.toDataURL("image/png", 1.0);
-    const link = document.createElement("a");
-    link.download = `schedule-${moment().format("YYYY-MM-DD")}.png`;
-    link.href = img;
-    link.click();
+        /* Keep wrapping you already fixed */
+        .rbc-event, .rbc-event-content {
+          white-space: normal !important;
+        }
+
+        .rbc-calendar, .rbc-event, .rbc-event-content {
+          font-family: Arial, sans-serif !important;
+          line-height: 1.25 !important;
+          box-sizing: border-box !important;
+        }
+      // `;
+
+      offscreen.appendChild(style);
+      offscreen.appendChild(clone);
+      document.body.appendChild(offscreen);
+
+      // Force the internal time grid to expand to its full height in the clone
+      // const timeContent = offscreen.querySelector(
+      //   ".rbc-time-content"
+      // ) as HTMLElement | null;
+      // const timeView = offscreen.querySelector(
+      //   ".rbc-time-view"
+      // ) as HTMLElement | null;
+
+      // if (timeContent) {
+      //   // scrollHeight gives full content height (even if it would scroll)
+      //   timeContent.style.height = `${timeContent.scrollHeight}px`;
+      // }
+      // if (timeView) {
+      //   timeView.style.height = `${timeView.scrollHeight}px`;
+      // }
+
+      // Let the browser reflow after applying heights
+      await nextPaint();
+      await sleep(0);
+
+      const scale = 2; // fixed, consistent at any browser zoom
+      const canvas = await html2canvas(clone, {
+        backgroundColor: "#ffffff",
+        scale,
+        useCORS: true,
+        logging: false,
+        width: clone.scrollWidth,
+        height: clone.scrollHeight,
+        windowWidth: clone.scrollWidth,
+        windowHeight: clone.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+      });
+      const dataUrl = canvas.toDataURL("image/png");
+
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `schedule-${moment().format("YYYY-MM-DD_HHmm")}.png`;
+      a.click();
+
+      document.body.removeChild(offscreen);
+    } catch (err) {
+      console.error("Download failed:", err);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const eventPropGetter: EventPropGetter<CalendarEvent> = (event) => {
@@ -267,10 +324,10 @@ const HomePage: React.FC = () => {
 
     return {
       style: {
-        overflow: "hidden",
+        // overflow: "hidden",
         padding: "2px 4px",
         fontSize: duration < 60 ? "10px" : "11px",
-        lineHeight: 1.15,
+        // lineHeight: 1.15,
         borderRadius: "6px",
       },
     };
@@ -407,66 +464,36 @@ const HomePage: React.FC = () => {
   };
 
   const CustomEvent = ({ event }: { event: CalendarEvent }) => {
-    const durationMin =
-      (event.end.getTime() - event.start.getTime()) / (1000 * 60);
+    const durationMin = (event.end.getTime() - event.start.getTime()) / 60000;
+    const showMeta = durationMin >= 45;
 
-    const showLocation = durationMin >= 75;
-    const showInstructors = durationMin >= 90;
-
-    const timeText = `${moment(event.start).format("h:mm A")} – ${moment(
+    const timeText = `${moment(event.start).format("h:mm A")}–${moment(
       event.end
     ).format("h:mm A")}`;
 
-    const clamp = (lines: number) => ({
-      display: "-webkit-box",
-      WebkitBoxOrient: "vertical" as const,
-      WebkitLineClamp: lines,
-      overflow: "hidden",
-    });
+    const metaParts = [
+      showMeta ? event.location : "",
+      showMeta && event.instructors?.length ? event.instructors.join(", ") : "",
+    ].filter(Boolean);
+
+    const metaText = metaParts.join(" • ");
 
     return (
-      <div style={{ cursor: "pointer" }}>
-        <div style={{ fontSize: "10px", opacity: 0.95, ...clamp(1) }}>
-          {timeText}
-        </div>
-
-        <div
-          style={{
-            fontSize: durationMin < 60 ? "10px" : "11px",
-            fontWeight: 700,
-            marginTop: "2px",
-            ...clamp(durationMin < 60 ? 1 : 2),
-          }}
+      <Box cursor="pointer">
+        <Text
+          fontSize="10px"
+          lineHeight="1.3"
+          title={[timeText, event.title, metaText].filter(Boolean).join(" • ")}
         >
-          {event.title}
-        </div>
-
-        {showLocation && event.location && (
-          <div
-            style={{
-              fontSize: "10px",
-              opacity: 0.85,
-              marginTop: "2px",
-              ...clamp(1),
-            }}
-          >
-            📍 {event.location}
-          </div>
-        )}
-
-        {showInstructors && event.instructors?.length > 0 && (
-          <div
-            style={{
-              fontSize: "9px",
-              opacity: 0.75,
-              marginTop: "2px",
-              ...clamp(1),
-            }}
-          >
-            👤 {event.instructors.join(", ")}
-          </div>
-        )}
-      </div>
+          <chakra.span opacity={0.95}>{timeText} </chakra.span>
+          <chakra.strong style={{ fontWeight: 700 }}>
+            {event.title}
+          </chakra.strong>
+          {metaText ? (
+            <chakra.span style={{ opacity: 0.8 }}> • {metaText}</chakra.span>
+          ) : null}
+        </Text>
+      </Box>
     );
   };
   // Interface for usage limit result
@@ -494,6 +521,17 @@ const HomePage: React.FC = () => {
       paddingTop="50px"
     >
       <HStack spacing={3} mb={4}>
+        <Button
+          onClick={handleDownload}
+          colorScheme="purple"
+          variant="outline"
+          size="sm"
+          isDisabled={events.length === 0}
+          isLoading={isDownloading}
+          loadingText="Generating..."
+        >
+          📸 Download as Image
+        </Button>
         <Text fontSize="xl" fontWeight="bold" color="gray.700">
           🤖 AI Schedule Maker
         </Text>
@@ -567,8 +605,7 @@ const HomePage: React.FC = () => {
           </Button>
         )}
       </HStack>
-
-      <Box textAlign="center" mt={3}>
+      <Box>
         <Text fontSize="sm" color="green.600" fontWeight="medium">
           {events.length > 0 && (
             <Box textAlign="center" mt={3}>
@@ -582,7 +619,6 @@ const HomePage: React.FC = () => {
           )}
         </Text>
       </Box>
-
       <Box
         width="100%"
         paddingX="4%"
@@ -590,15 +626,6 @@ const HomePage: React.FC = () => {
         ref={scheduleRef}
         id="schedule-export-root"
       >
-        <Button
-          onClick={handleDownload}
-          colorScheme="purple"
-          variant="outline"
-          size="sm"
-          isDisabled={events.length === 0}
-        >
-          📸 Download as Image
-        </Button>
         <DragAndDropCalendar
           localizer={localizer}
           date={calendarDate}
@@ -621,8 +648,8 @@ const HomePage: React.FC = () => {
           view={calendarView}
           views={{ week: true, work_week: true }}
           eventPropGetter={eventPropGetter}
-          step={30}
-          timeslots={2}
+          step={60}
+          timeslots={1}
           components={{
             event: CustomEvent,
             week: { header: WeekHeader as any },
@@ -635,9 +662,7 @@ const HomePage: React.FC = () => {
           dayLayoutAlgorithm="no-overlap"
         />
       </Box>
-
       <CommentSection />
-
       <Box py="20px" fontSize="14px">
         Made by Ahmed
       </Box>

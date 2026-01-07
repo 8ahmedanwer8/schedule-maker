@@ -60,7 +60,7 @@ router.get("/status", async (req: Request, res: Response) => {
     const dailyFreeLimit =
       parseInt(await database.getSetting("daily_free_limit")) || 2;
     const maxDailyUsage =
-      parseInt(await database.getSetting("max_daily_usage")) || 10;
+      parseInt(await database.getSetting("max_daily_usage")) || 100;
     const creditsPerAd =
       parseInt(await database.getSetting("credits_per_ad")) || 1;
 

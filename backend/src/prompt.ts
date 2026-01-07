@@ -72,226 +72,165 @@
 //   }
 // ]
 // `;
-
-export const RESPONSE = `
+export const RESPONSELLAMA = `
+[ { "title": "Obj-Orientd Progrmg Using Java", "start": "Monday 11:30 AM", "end": "Monday 12:50 PM", "instructors": ["Shaon Shuvo"], "location": "Dillon Hall 255" }, { "title": "System Programming", "start": "Monday 1:00 PM", "end": "Monday 2:20 PM", "instructors": ["Sherif Saad Ahmed"], "location": "Toldo Health Education Ctr 102" }, { "title": "Capstone Design Project", "start": "Friday 8:30 AM", "end": "Friday 10:20 AM", "instructors": ["Roberto Muscedere"], "location": "Ctr For Engin. Innovation 1102" }, { "title": "Capstone Design Project - LAB", "start": "Thursday 8:30 PM", "end": "Friday 10:30 AM", "instructors": [], "location": "To be Announced" }, { "title": "Control Systems II", "start": "Tuesday 11:30 AM", "end": "Tuesday 12:50 PM", "instructors": ["Xiang Chen"], "location": "Chrysler Hall South 51" }, { "title": "Control Systems II - LAB", "start": "Tuesday 2:30 PM", "end": "Tuesday 5:20 PM", "instructors": ["Xiang Chen"], "location": ["Toldo Health Education Ctr 203", "Ctr. for Engin. Innovation 113"] }, { "title": "Sensor and Vision Systems", "start": "Tuesday 1:00 PM", "end": "Tuesday 2:20 PM", "instructors": ["Jonathan Wu"], "location": "Erie Hall 2123" }, { "title": "Sensor and Vision Systems - LAB", "start": "Thursday 2:30 PM", "end": "Thursday 3:50 PM", "instructors": ["Jonathan Wu"], "location": "Ctr For Engin. Innovation 2100" }, { "title": "Power Systems I", "start": "Tuesday 7:30 PM", "end": "Tuesday 8:50 PM", "instructors": ["Maher Azzouz"], "location": ["Ctr For Engin. Innovation 1102", "Computer Lab - CE2105A", "Computer Lab - CE2105B", "Computer Lab - CE2105C", "Computer Lab - CE2105D", "Ctr For Engin. Innovation 1102"] }, { "title": "Power Systems I - LAB", "start": "Friday 5:30 PM", "end": "Friday 7:20 PM", "instructors": ["Maher Azzouz"], "location": ["Computer Lab - CE2105D", "Ctr For Engin. Innovation 1102", "Computer Lab - CE2105C"] }, { "title": "Fund-Digital Signal Processg", "start": "Wednesday 4:00 PM", "end": "Wednesday 5:20 PM", "instructors": ["Esam Abdel-Raheem"], "location": "Erie Hall 2123" }, { "title": "Fund-Digital Signal Processg - LAB", "start": "Thursday 6:30 PM", "end": "Thursday 8:20 PM", "instructors": ["Esam Abdel-Raheem"], "location": ["Computer Lab - CE2105C", "Ctr For Engin. Innovation 1101", "Computer Lab - CE2105B"] } ]
+`;
+export const RESPONSEGPT40 = `
 [
-{
-"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LEC)",
-"start": "Monday 11:30 AM",
-"end": "Monday 12:50 PM",
-"instructors": null,
-"location": "Dillon Hall 255"
-},
-{
-"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LEC)",
-"start": "Wednesday 11:30 AM",
-"end": "Wednesday 12:50 PM",
-"instructors": null,
-"location": "Dillon Hall 255"
-},
-{
-"title": "COMP 2120 Obj-Orientd Progrmg Using Java (LAB)",
-"start": "Monday 4:00 PM",
-"end": "Monday 5:20 PM",
-"instructors": null,
-"location": "Erie Hall 3120"
-},
-{
-"title": "COMP 2560 System Programming (LEC)",
-"start": "Monday 1:00 PM",
-"end": "Monday 2:20 PM",
-"instructors": null,
-"location": "Toldo Health Education Ctr 102"
-},
-{
-"title": "COMP 2560 System Programming (LEC)",
-"start": "Wednesday 1:00 PM",
-"end": "Wednesday 2:20 PM",
-"instructors": null,
-"location": "Toldo Health Education Ctr 102"
-},
-{
-"title": "COMP 2560 System Programming (LAB)",
-"start": "Wednesday 5:30 PM",
-"end": "Wednesday 6:50 PM",
-"instructors": null,
-"location": "West Library 305C"
-},
-{
-"title": "ELEC 4000A Capstone Design Project (LEC)",
-"start": "Friday 8:30 AM",
-"end": "Friday 10:20 AM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 1102"
-},
-{
-"title": "ELEC 4000A Capstone Design Project (LAB)",
-"start": "Thursday 8:30 PM",
-"end": "Thursday 9:50 PM",
-"instructors": null,
-"location": null
-},
-{
-"title": "ELEC 4000A Capstone Design Project (LAB)",
-"start": "Friday 10:30 AM",
-"end": "Friday 12:50 PM",
-"instructors": null,
-"location": null
-},
-{
-"title": "ELEC 4310 Control Systems II (LEC)",
-"start": "Tuesday 11:30 AM",
-"end": "Tuesday 12:50 PM",
-"instructors": null,
-"location": "Chrysler Hall South 51"
-},
-{
-"title": "ELEC 4310 Control Systems II (LEC)",
-"start": "Thursday 11:30 AM",
-"end": "Thursday 12:50 PM",
-"instructors": null,
-"location": "Chrysler Hall South 51"
-},
-{
-"title": "ELEC 4310 Control Systems II (LAB)",
-"start": "Tuesday 2:30 PM",
-"end": "Tuesday 5:20 PM",
-"instructors": null,
-"location": "Ctr. for Engin. Innovation 113"
-},
-{
-"title": "ELEC 4310 Control Systems II (LAB)",
-"start": "Tuesday 2:30 PM",
-"end": "Tuesday 5:20 PM",
-"instructors": null,
-"location": "Toldo Health Education Ctr 203"
-},
-{
-"title": "ELEC 4490 Sensor and Vision Systems (LEC)",
-"start": "Tuesday 1:00 PM",
-"end": "Tuesday 2:20 PM",
-"instructors": null,
-"location": "Erie Hall 2123"
-},
-{
-"title": "ELEC 4490 Sensor and Vision Systems (LEC)",
-"start": "Thursday 1:00 PM",
-"end": "Thursday 2:20 PM",
-"instructors": null,
-"location": "Erie Hall 2123"
-},
-{
-"title": "ELEC 4490 Sensor and Vision Systems (LAB)",
-"start": "Thursday 2:30 PM",
-"end": "Thursday 3:50 PM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 2100"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Tuesday 7:30 PM",
-"end": "Tuesday 8:50 PM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 1102"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Tuesday 7:30 PM",
-"end": "Tuesday 8:50 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105A"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Tuesday 7:30 PM",
-"end": "Tuesday 8:50 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105B"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Tuesday 7:30 PM",
-"end": "Tuesday 8:50 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105D"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Friday 7:30 PM",
-"end": "Friday 8:50 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105C"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Friday 7:30 PM",
-"end": "Friday 8:50 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105D"
-},
-{
-"title": "ELEC 4500 Power Systems I (LEC)",
-"start": "Friday 7:30 PM",
-"end": "Friday 8:50 PM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 1102"
-},
-{
-"title": "ELEC 4500 Power Systems I (LAB)",
-"start": "Friday 5:30 PM",
-"end": "Friday 7:20 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105D"
-},
-{
-"title": "ELEC 4500 Power Systems I (LAB)",
-"start": "Friday 5:30 PM",
-"end": "Friday 7:20 PM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 1102"
-},
-{
-"title": "ELEC 4500 Power Systems I (LAB)",
-"start": "Friday 5:30 PM",
-"end": "Friday 7:20 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105C"
-},
-{
-"title": "ELEC 4570 Fund-Digital Signal Processg (LEC)",
-"start": "Wednesday 4:00 PM",
-"end": "Wednesday 5:20 PM",
-"instructors": null,
-"location": "Erie Hall 2123"
-},
-{
-"title": "ELEC 4570 Fund-Digital Signal Processg (LEC)",
-"start": "Friday 4:00 PM",
-"end": "Friday 5:20 PM",
-"instructors": null,
-"location": "Erie Hall 2123"
-},
-{
-"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
-"start": "Thursday 6:30 PM",
-"end": "Thursday 8:20 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105C"
-},
-{
-"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
-"start": "Thursday 6:30 PM",
-"end": "Thursday 8:20 PM",
-"instructors": null,
-"location": "Ctr For Engin. Innovation 1101"
-},
-{
-"title": "ELEC 4570 Fund-Digital Signal Processg (LAB)",
-"start": "Thursday 6:30 PM",
-"end": "Thursday 8:20 PM",
-"instructors": null,
-"location": "Computer Lab - CE2105B"
-}
+  {
+    "title": "COMP 2120 Obj-Orientd Progrmg Using Java - Lecture",
+    "start": "Monday 11:30 AM",
+    "end": "Monday 12:50 PM",
+    "instructors": ["Shaon Shuvo"],
+    "location": "Dillon Hall 255"
+  },
+  {
+    "title": "COMP 2120 Obj-Orientd Progrmg Using Java - Lecture",
+    "start": "Wednesday 11:30 AM",
+    "end": "Wednesday 12:50 PM",
+    "instructors": ["Shaon Shuvo"],
+    "location": "Dillon Hall 255"
+  },
+  {
+    "title": "COMP 2120 Obj-Orientd Progrmg Using Java - Lab",
+    "start": "Monday 4:00 PM",
+    "end": "Monday 5:20 PM",
+    "instructors": ["Shaon Shuvo"],
+    "location": "Erie Hall 3120"
+  },
+  {
+    "title": "COMP 2560 System Programming - Lecture",
+    "start": "Monday 1:00 PM",
+    "end": "Monday 2:20 PM",
+    "instructors": ["Sherif Saad Ahmed"],
+    "location": "Toldo Health Education Ctr 102"
+  },
+  {
+    "title": "COMP 2560 System Programming - Lecture",
+    "start": "Wednesday 1:00 PM",
+    "end": "Wednesday 2:20 PM",
+    "instructors": ["Sherif Saad Ahmed"],
+    "location": "Toldo Health Education Ctr 102"
+  },
+  {
+    "title": "COMP 2560 System Programming - Lab",
+    "start": "Wednesday 5:30 PM",
+    "end": "Wednesday 6:50 PM",
+    "instructors": ["Sherif Saad Ahmed"],
+    "location": "West Library 305C"
+  },
+  {
+    "title": "ELEC 4000A Capstone Design Project - Lecture",
+    "start": "Friday 8:30 AM",
+    "end": "Friday 10:20 AM",
+    "instructors": ["Roberto Muscedere"],
+    "location": "Ctr For Engin. Innovation 1102"
+  },
+  {
+    "title": "ELEC 4000A Capstone Design Project - Lab",
+    "start": "Thursday 8:30 PM",
+    "end": "Thursday 9:50 PM",
+    "instructors": ["Roberto Muscedere"],
+    "location": null
+  },
+  {
+    "title": "ELEC 4000A Capstone Design Project - Lab",
+    "start": "Friday 10:30 AM",
+    "end": "Friday 12:50 PM",
+    "instructors": ["Roberto Muscedere"],
+    "location": null
+  },
+  {
+    "title": "ELEC 4310 Control Systems II - Lecture",
+    "start": "Tuesday 11:30 AM",
+    "end": "Tuesday 12:50 PM",
+    "instructors": ["Xiang Chen"],
+    "location": "Chrysler Hall South 51"
+  },
+  {
+    "title": "ELEC 4310 Control Systems II - Lecture",
+    "start": "Thursday 11:30 AM",
+    "end": "Thursday 12:50 PM",
+    "instructors": ["Xiang Chen"],
+    "location": "Chrysler Hall South 51"
+  },
+  {
+    "title": "ELEC 4310 Control Systems II - Lab",
+    "start": "Tuesday 2:30 PM",
+    "end": "Tuesday 5:20 PM",
+    "instructors": ["Xiang Chen"],
+    "location": "Ctr. for Engin. Innovation 113"
+  },
+  {
+    "title": "ELEC 4310 Control Systems II - Lab",
+    "start": "Tuesday 2:30 PM",
+    "end": "Tuesday 5:20 PM",
+    "instructors": ["Xiang Chen"],
+    "location": "Toldo Health Education Ctr 203"
+  },
+  {
+    "title": "ELEC 4490 Sensor and Vision Systems - Lecture",
+    "start": "Tuesday 1:00 PM",
+    "end": "Tuesday 2:20 PM",
+    "instructors": ["Jonathan Wu"],
+    "location": "Erie Hall 2123"
+  },
+  {
+    "title": "ELEC 4490 Sensor and Vision Systems - Lecture",
+    "start": "Thursday 1:00 PM",
+    "end": "Thursday 2:20 PM",
+    "instructors": ["Jonathan Wu"],
+    "location": "Erie Hall 2123"
+  },
+  {
+    "title": "ELEC 4490 Sensor and Vision Systems - Lab",
+    "start": "Thursday 2:30 PM",
+    "end": "Thursday 3:50 PM",
+    "instructors": ["Jonathan Wu"],
+    "location": "Ctr For Engin. Innovation 2100"
+  },
+  {
+    "title": "ELEC 4500 Power Systems I - Lecture",
+    "start": "Tuesday 7:30 PM",
+    "end": "Tuesday 8:50 PM",
+    "instructors": ["Maher Azzouz"],
+    "location": "Ctr For Engin. Innovation 1102"
+  },
+  {
+    "title": "ELEC 4500 Power Systems I - Lecture",
+    "start": "Friday 7:30 PM",
+    "end": "Friday 8:50 PM",
+    "instructors": ["Maher Azzouz"],
+    "location": "Ctr For Engin. Innovation 1102"
+  },
+  {
+    "title": "ELEC 4500 Power Systems I - Lab",
+    "start": "Friday 5:30 PM",
+    "end": "Friday 7:20 PM",
+    "instructors": ["Maher Azzouz"],
+    "location": "Ctr For Engin. Innovation 1102"
+  },
+  {
+    "title": "ELEC 4570 Fund-Digital Signal Processg - Lecture",
+    "start": "Wednesday 4:00 PM",
+    "end": "Wednesday 5:20 PM",
+    "instructors": ["Esam Abdel-Raheem"],
+    "location": "Erie Hall 2123"
+  },
+  {
+    "title": "ELEC 4570 Fund-Digital Signal Processg - Lecture",
+    "start": "Friday 4:00 PM",
+    "end": "Friday 5:20 PM",
+    "instructors": ["Esam Abdel-Raheem"],
+    "location": "Erie Hall 2123"
+  },
+  {
+    "title": "ELEC 4570 Fund-Digital Signal Processg - Lab",
+    "start": "Thursday 6:30 PM",
+    "end": "Thursday 8:20 PM",
+    "instructors": ["Esam Abdel-Raheem"],
+    "location": "Ctr For Engin. Innovation 1101"
+  }
 ]
 `;
 export const GET_SCHEDULE_PROMPT_SHORT = `
@@ -362,7 +301,7 @@ INPUT
 `;
 
 export const USER_INPUT = `
-COMP 1000 Key Concepts in Computer Scie
+COMP 2120 Obj-Orientd Progrmg Using Java
 Status
 	
 Units
@@ -375,7 +314,7 @@ Academic Program
 	
 Requirement Designation
 	
-	
+Instructor  Shaon Shuvo
 	
 	
 	
@@ -398,208 +337,467 @@ Days and Times
 	
 Room
 	
-LEC - Class Sect 2 - Class Nbr 2543
+LEC - Class Sect 1 - Class Nbr 2543
 	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Tuesday Thursday
-Times: 5:30PM to 6:50PM
-	
-Chrysler Hall North G133
- 
-	
- 
-LAB - Class Sect 54 - Class Nbr 2547
-	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Thursday
-Times: 7:00PM to 8:20PM
-	
-Dillon Hall 359
- 
-	
- 
-Enrollment Deadlines
-COMP 1400 Intro: Algorithms & Prog I
-Status
-	
-Units
-	
-Grading Basis
-	
-Grade
-	
-Academic Program
-	
-Requirement Designation
-	
-	
-	
-	
-	
-Enrolled
-	
-3.00
-	
-Graded
-	
- 
-	
-Bach of Applied Sci Elec Eng
-	
- 
-Class
-	
-Start/End Dates
-	
-Days and Times
-	
-Room
-	
-LEC - Class Sect 30 - Class Nbr 2555
-	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Wednesday
-Times: 7:00PM to 9:50PM
-	
-Odette Building 104
- 
-	
- 
-LAB - Class Sect 57 - Class Nbr 2562
-	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Monday
-Times: 10:00AM to 11:20AM
-	
-West Library 305C
- 
-	
- 
-Enrollment Deadlines
-COMP 1410 Intro: Algorithms & Prog II
-Status
-	
-Units
-	
-Grading Basis
-	
-Grade
-	
-Academic Program
-	
-Requirement Designation
-	
-	
-	
-	
-	
-Enrolled
-	
-3.00
-	
-Graded
-	
- 
-	
-Bach of Applied Sci Elec Eng
-	
- 
-Class
-	
-Start/End Dates
-	
-Days and Times
-	
-Room
-	
-LAB - Class Sect 52 - Class Nbr 2567
-	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Thursday
-Times: 8:30PM to 9:50PM
-	
-West Library 305C
- 
-	
- 
-LEC - Class Sect 1 - Class Nbr 2883
-	
-05/09/2024 - 04/12/2024
- 
-	
-Days: Tuesday
-Times: 7:00PM to 9:50PM
-	
-Erie Hall 3123
- 
-	
- 
-Enrollment Deadlines
-STAT 2920 Introduction to Probability
-Status
-	
-Units
-	
-Grading Basis
-	
-Grade
-	
-Academic Program
-	
-Requirement Designation
-	
-	
-	
-	
-	
-Enrolled
-	
-3.00
-	
-Graded
-	
- 
-	
-Bach of Applied Sci Elec Eng
-	
- 
-Class
-	
-Start/End Dates
-	
-Days and Times
-	
-Room
-	
-LEC - Class Sect 1 - Class Nbr 2718
-	
-05/09/2024 - 04/12/2024
+05/01/2026 - 06/04/2026
  
 	
 Days: Monday Wednesday
 Times: 11:30AM to 12:50PM
 	
-Erie Hall 3123
+Dillon Hall 255
  
 	
  
-LAB - Class Sect 51 - Class Nbr 3145
+LAB - Class Sect 51 - Class Nbr 2544
 	
-05/09/2024 - 04/12/2024
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Monday
+Times: 4:00PM to 5:20PM
+	
+Erie Hall 3120
+ 
+	
+ 
+Enrollment Deadlines
+COMP 2560 System Programming
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+Instructor  Sherif Saad Ahmed
+	
+	
+	
+Enrolled
+	
+3.00
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 2553
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Monday Wednesday
+Times: 1:00PM to 2:20PM
+	
+Toldo Health Education Ctr 102
+ 
+	
+ 
+LAB - Class Sect 52 - Class Nbr 2555
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Wednesday
+Times: 5:30PM to 6:50PM
+	
+West Library 305C
+ 
+	
+ 
+Enrollment Deadlines
+ELEC 4000A Capstone Design Project
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+	
+Instructor  Roberto Muscedere
+	
+	
+Enrolled
+	
+ 
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 1806
+	
+05/01/2026 - 06/04/2026
  
 	
 Days: Friday
-Times: 8:30AM to 9:20AM
+Times: 8:30AM to 10:20AM
 	
-Toldo Health Education Ctr 104
+Ctr For Engin. Innovation 1102
+ 
+	
+ 
+LAB - Class Sect 51 - Class Nbr 1807
+	
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Thursday
+Times: 8:30PM to 9:50PM
+Days: Friday
+Times: 10:30AM to 12:50PM
+	
+To be Announced
+ 
+To be Announced
+ 
+	
+ 
+Enrollment Deadlines
+ELEC 4310 Control Systems II
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+	
+Instructor  Xiang Chen
+	
+	
+Enrolled
+	
+3.00
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 1754
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Tuesday Thursday
+Times: 11:30AM to 12:50PM
+	
+Chrysler Hall South 51
+ 
+	
+ 
+LAB - Class Sect 51 - Class Nbr 1755
+	
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Tuesday
+Times: 2:30PM to 5:20PM
+Days: Tuesday
+Times: 2:30PM to 5:20PM
+	
+Ctr. for Engin. Innovation 113
+ 
+Toldo Health Education Ctr 203
+ 
+	
+ 
+Enrollment Deadlines
+ELEC 4490 Sensor and Vision Systems
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+Instructor  Jonathan Wu
+	
+	
+	
+Enrolled
+	
+3.00
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 1829
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Tuesday Thursday
+Times: 1:00PM to 2:20PM
+	
+Erie Hall 2123
+ 
+	
+ 
+LAB - Class Sect 51 - Class Nbr 1830
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Thursday
+Times: 2:30PM to 3:50PM
+	
+Ctr For Engin. Innovation 2100
+ 
+	
+ 
+Enrollment Deadlines
+ELEC 4500 Power Systems I
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+Instructor  Maher Azzouz
+	
+	
+	
+Enrolled
+	
+3.00
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 1761
+	
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Tuesday
+Times: 7:30PM to 8:50PM
+Days: Tuesday
+Times: 7:30PM to 8:50PM
+Days: Tuesday
+Times: 7:30PM to 8:50PM
+Days: Tuesday
+Times: 7:30PM to 8:50PM
+Days: Friday
+Times: 7:30PM to 8:50PM
+Days: Friday
+Times: 7:30PM to 8:50PM
+Days: Friday
+Times: 7:30PM to 8:50PM
+	
+Ctr For Engin. Innovation 1102
+ 
+Computer Lab - CE2105A
+ 
+Computer Lab - CE2105B
+ 
+Computer Lab - CE2105D
+ 
+Computer Lab - CE2105C
+ 
+Computer Lab - CE2105D
+ 
+Ctr For Engin. Innovation 1102
+ 
+	
+ 
+LAB - Class Sect 51 - Class Nbr 1762
+	
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Friday
+Times: 5:30PM to 7:20PM
+Days: Friday
+Times: 5:30PM to 7:20PM
+Days: Friday
+Times: 5:30PM to 7:20PM
+	
+Computer Lab - CE2105D
+ 
+Ctr For Engin. Innovation 1102
+ 
+Computer Lab - CE2105C
+ 
+	
+ 
+Enrollment Deadlines
+ELEC 4570 Fund-Digital Signal Processg
+Status
+	
+Units
+	
+Grading Basis
+	
+Grade
+	
+Academic Program
+	
+Requirement Designation
+	
+	
+Instructor  Esam Abdel-Raheem
+	
+	
+Enrolled
+	
+3.00
+	
+Graded
+	
+ 
+	
+Bach of Applied Sci Elec Eng
+	
+ 
+Class
+	
+Start/End Dates
+	
+Days and Times
+	
+Room
+	
+LEC - Class Sect 1 - Class Nbr 1763
+	
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Wednesday Friday
+Times: 4:00PM to 5:20PM
+	
+Erie Hall 2123
+ 
+	
+ 
+LAB - Class Sect 51 - Class Nbr 1764
+	
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+05/01/2026 - 06/04/2026
+ 
+	
+Days: Thursday
+Times: 6:30PM to 8:20PM
+Days: Thursday
+Times: 6:30PM to 8:20PM
+Days: Thursday
+Times: 6:30PM to 8:20PM
+	
+Computer Lab - CE2105C
+ 
+Ctr For Engin. Innovation 1101
+ 
+Computer Lab - CE2105B
+ 
+	
+ 
+Enrollment Deadlines
 `;

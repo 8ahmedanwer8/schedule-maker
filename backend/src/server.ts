@@ -8,7 +8,7 @@ import {
   GET_SCHEDULE_PROMPT,
   USER_INPUT,
   GET_SCHEDULE_PROMPT_SHORT,
-  RESPONSE,
+  RESPONSEGPT40,
 } from "./prompt";
 import { usageLimitMiddleware } from "./middleware/usageLimit";
 import usageRoutes from "./routes/usage";
@@ -84,10 +84,10 @@ app.post(
           scheduleData = JSON.parse(content);
         } catch (apiError) {
           console.error("OpenAI API error:", apiError);
-          scheduleData = JSON.parse(RESPONSE);
+          scheduleData = JSON.parse(RESPONSEGPT40);
         }
       } else {
-        scheduleData = JSON.parse(RESPONSE);
+        scheduleData = JSON.parse(RESPONSEGPT40);
       }
 
       const mutatedData = scheduleData.map((classItem: any) => ({

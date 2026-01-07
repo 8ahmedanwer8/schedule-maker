@@ -42,7 +42,7 @@ class Database {
     const dailyFreeLimit =
       parseInt(await this.getSetting("daily_free_limit")) || 2;
     const maxDailyUsage =
-      parseInt(await this.getSetting("max_daily_usage")) || 10;
+      parseInt(await this.getSetting("max_daily_usage")) || 100;
 
     const today = new Date().toISOString().slice(0, 10);
 
@@ -278,7 +278,7 @@ class Database {
     const defaultSettings = [
       { key: "daily_free_limit", value: "2" },
       { key: "credits_per_ad", value: "1" },
-      { key: "max_daily_usage", value: "10" },
+      { key: "max_daily_usage", value: "100" },
       { key: "auto_adjust_limits", value: "true" },
     ];
 
