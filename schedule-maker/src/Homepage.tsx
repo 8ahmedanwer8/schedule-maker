@@ -148,13 +148,8 @@ const HomePage: React.FC = () => {
     );
   };
 
-  const STEP_MINUTES = 30;
-
-  const floorToStep = (mins: number) =>
-    Math.floor(mins / STEP_MINUTES) * STEP_MINUTES;
-
-  const ceilToStep = (mins: number) =>
-    Math.ceil(mins / STEP_MINUTES) * STEP_MINUTES;
+  const floorToHour = (mins: number) => Math.floor(mins / 60) * 60;
+  const ceilToHour = (mins: number) => Math.ceil(mins / 60) * 60;
 
   const [minTime, maxTime] = React.useMemo(() => {
     const min = new Date();
@@ -173,11 +168,11 @@ const HomePage: React.FC = () => {
       (e) => e.end.getHours() * 60 + e.end.getMinutes()
     );
 
-    const minM = floorToStep(Math.min(...startMins));
-    const maxM = ceilToStep(Math.max(...endMins));
+    const minM = floorToHour(Math.min(...startMins)); // always x:00
+    const maxM = ceilToHour(Math.max(...endMins)); // always x:00
 
-    min.setHours(Math.floor(minM / 60), minM % 60, 0, 0);
-    max.setHours(Math.floor(maxM / 60), maxM % 60, 0, 0);
+    min.setHours(Math.floor(minM / 60), 0, 0, 0);
+    max.setHours(Math.floor(maxM / 60), 0, 0, 0);
 
     return [min, max];
   }, [events]);
