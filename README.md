@@ -144,14 +144,3 @@ Client Call Wednesday 2PM-3PM via Zoom
 Project Review Friday 4PM-5PM with Manager Smith
 ```
 
-## 🤝 Contributing
-
-Feel free to submit issues, fork the repository, and create pull requests for any improvements.
-
-## 📄 License
-
-MIT License - feel free to use in your own projects!
-
----
-
-Made with ❤️ by Ahmed
